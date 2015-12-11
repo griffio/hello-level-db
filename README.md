@@ -4,6 +4,8 @@
 
 ## Overview
 
+LevelDB Node in Clojure Script
+
 ## Setup
 
 Build your project once in dev mode with the following script and then open `index.html` in your browser.
