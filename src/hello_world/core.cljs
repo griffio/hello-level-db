@@ -11,7 +11,13 @@
 
 (def level (nodejs/require "level"))
 
-(def db (level "./test_db"))
+(def path (nodejs/require "path"))
+
+(def path-to-db (.join path (.cwd nodejs/process) "test_db"))
+
+(println path-to-db)
+
+(defonce db (level path-to-db))
 
 (defn level-is-open? []
   (let [out (chan)]
@@ -36,7 +42,20 @@
                    (if er (put! out er) (put! out value))))
     out))
 
+(defn level-batch [ops]
+  (let [out (chan)]
+    (.batch db ops (fn [er]
+                     (if er (put! out er) (put! out ops))))
+    out))
+
+(def ops (array #js {:type "put" :key "age" :value 800}
+                #js {:type "put" :key "location" :value "Dagobah"}
+                #js {:type "put" :key "person" :value "Yoda"}
+                #js {:type "put" :key "skill" :value "Jedi Master"}))
+
 (defn -main [& args]
+
+  (println ops)
 
   (go (try
         (<? (level-put "age" 42))
@@ -47,7 +66,9 @@
               location (<? (level-get "location"))
               person (<? (level-get "person"))
               skill (<? (level-get "skill"))]
-          (println (str "age:" age ",location:" location ",person:" person ",skill" skill)))
+          (println (str "age:" age ",location:" location ",person:" person ",skill:" skill)))
+        (<? (level-batch ops))
+        (println (str (<? (level-get "person")) " can be found on " (<? (level-get "location"))))
         (catch js/Error er
           (log-error er)))))
 
