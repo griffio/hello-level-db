@@ -8,3 +8,9 @@ pom.xml
 .lein-deps-sum
 .lein-repl-history
 .lein-plugins/
+test_db
+node_modules
+main.js
+hello-world.iml
+figwheel_server.log
+.idea
