@@ -13,11 +13,15 @@
 
 (def path (nodejs/require "path"))
 
-(def path-to-db (.join path (.cwd nodejs/process) "test_db"))
+(def location-to-db (.join path (.cwd nodejs/process) "test_db"))
 
-(println path-to-db)
+(println location-to-db)
 
-(defonce db (level path-to-db))
+(defonce db (level location-to-db
+                   #js {:createIfMissing true
+                        :compression     true
+                        :keyEncoding     "utf8"
+                        :valueEncoding   "utf8"}))
 
 (defn level-is-open? []
   (let [out (chan)]
@@ -33,7 +37,7 @@
 (defn level-put [key value]
   (let [out (chan)]
     (.put db key value (fn [er]
-                         (if er (put! out er) (put! out value))))
+                         (if er (put! out er) (put! out true))))
     out))
 
 (defn level-get [key]
@@ -45,7 +49,7 @@
 (defn level-batch [ops]
   (let [out (chan)]
     (.batch db ops (fn [er]
-                     (if er (put! out er) (put! out ops))))
+                     (if er (put! out er) (put! out true))))
     out))
 
 (def ops (array #js {:type "put" :key "age" :value 800}
@@ -69,6 +73,7 @@
           (println (str "age:" age ",location:" location ",person:" person ",skill:" skill)))
         (<? (level-batch ops))
         (println (str (<? (level-get "person")) " can be found on " (<? (level-get "location"))))
+        (<? (level-get "bogus"))
         (catch js/Error er
           (log-error er)))))
 

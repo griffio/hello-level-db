@@ -4,6 +4,9 @@
 
 ## Overview
 
+"LevelDB is a fast key-value storage engine written at Google that provides an ordered mapping from string keys to string values."
+[leveldb](https://www.igvita.com/2012/02/06/sstable-and-log-structured-storage-leveldb/)
+
 LevelDB Node in Clojure Script
 
 ## Setup
