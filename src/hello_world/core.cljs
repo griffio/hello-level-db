@@ -21,7 +21,7 @@
     out))
 
 (defn level-read [start end]
-  (let [out (chan) stream (.createReadStream db #js {:gte start :lte end}) result []]
+  (let [out (chan) stream (.createReadStream db #js {:gte start :lte end})]
     (.on stream "data" (fn [data]
                          (put! out data)))
     (.on stream "end" (fn []
