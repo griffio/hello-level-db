@@ -3,21 +3,48 @@
   (:require [cljs.nodejs :as nodejs]
             [cljs.core.async :refer [<! >! put! close! chan]]
             [util.error :refer [log-error]]))
+
 (nodejs/enable-util-print!)
+
 (def level (nodejs/require "level"))
+
 (def path (nodejs/require "path"))
+
 (def location-to-db (.join path (.cwd nodejs/process) "test_db"))
+
 (println location-to-db)
-(defonce db (level location-to-db #js {:createIfMissing true :compression true :keyEncoding "utf8" :valueEncoding "utf8"}))
-(defn level-is-open? [] (let [out (chan)] (put! out (.isOpen db)) out))
-(defn level-close [] (let [out (chan)] (.close db (fn [er] (if er (put! out er) (put! out true)))) out))
-(defn level-put [key value] (let [out (chan)] (.put db key value (fn [er] (if er (put! out er) (put! out true)))) out))
-(defn level-get [key] (let [out (chan)] (.get db key (fn [er value] (if er (put! out er) (put! out value)))) out))
+
+(def level-opts #js {:createIfMissing true :compression true :keyEncoding "utf8" :valueEncoding "utf8"})
+
+(defonce db (level location-to-db level-opts))
+
+(defn level-is-open? []
+  (let [out (chan)]
+    (put! out (.isOpen db))
+    out))
+
+(defn db-result [out]
+  (fn [er val]
+    (put! out (or er val true))))
+
+(defn level-close []
+  (let [out (chan)]
+    (.close db (put! out true))
+    out))
+
+(defn level-put [key value]
+  (let [out (chan)]
+    (.put db key value (db-result out))
+    out))
+
+(defn level-get [key]
+  (let [out (chan)]
+    (.get db key (db-result out))
+    out))
 
 (defn level-batch [ops]
   (let [out (chan)]
-    (.batch db ops (fn [er]
-                     (if er (put! out er) (put! out true))))
+    (.batch db ops (db-result out))
     out))
 
 (defn level-read [start end]
