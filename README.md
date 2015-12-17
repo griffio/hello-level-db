@@ -9,7 +9,7 @@
 
 LevelDB Node in Clojure Script
 
-core.async example
+cljs.core.async example
 
 ~~~
       (<? (level-put "age" 42)
