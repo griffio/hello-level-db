@@ -9,6 +9,13 @@
 
 LevelDB Node in Clojure Script
 
+core.async example
+
+~~~
+      (<? (level-put "age" 42)
+      (<? (level-get "age")
+~~~
+
 ## Setup
 
 Build your project once in dev mode with the following script and then open `index.html` in your browser.
