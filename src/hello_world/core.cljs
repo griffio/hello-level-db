@@ -1,5 +1,5 @@
 (ns ^:figwheel-always hello-world.core
-  (:require-macros [cljs.core.async.macros :refer [go]] [util.macros :refer [<?]])
+  (:require-macros [cljs.core.async.macros :refer [go]] [util.macros :refer [<? node->chan]])
   (:require [cljs.nodejs :as nodejs]
             [cljs.core.async :refer [<! >! put! close! chan]]
             [util.error :refer [log-error]]))
@@ -23,29 +23,19 @@
     (put! out (.isOpen db))
     out))
 
-(defn db-result [out]
-  (fn [er val]
-    (put! out (or er val true))))
-
 (defn level-close []
   (let [out (chan)]
     (.close db (put! out true))
     out))
 
 (defn level-put [key value]
-  (let [out (chan)]
-    (.put db key value (db-result out))
-    out))
+  (node->chan .put db key value))
 
 (defn level-get [key]
-  (let [out (chan)]
-    (.get db key (db-result out))
-    out))
+  (node->chan .get db key))
 
 (defn level-batch [ops]
-  (let [out (chan)]
-    (.batch db ops (db-result out))
-    out))
+  (node->chan .batch db ops))
 
 (defn level-read [start end]
   (let [out (chan) stream (.createReadStream db #js {:gte start :lte end})]
@@ -61,6 +51,7 @@
                 #js {:type "put" :key "skill" :value "Jedi Master"}))
 
 (defn -main [& args]
+
   (let [data-chan (level-read \a \z)]
     (go (try
           (<? (level-put "age" 42))

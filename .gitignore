@@ -14,3 +14,5 @@ main.js
 hello-world.iml
 figwheel_server.log
 .idea
+npm-debug.log
+.cljs_node_repl
