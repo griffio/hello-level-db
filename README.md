@@ -11,6 +11,8 @@ LevelDB Node in Clojure Script
 
 cljs.core.async example
 
+macro for node-style callback (error back) http://thenodeway.io/posts/understanding-error-first-callbacks/
+
 ~~~
       (<? (level-put "age" 42)
       (<? (level-get "age")
@@ -61,6 +63,6 @@ Build a single release artifact with the following script and then open `index_r
 
 ## License
 
-Copyright © 2015 FIXME
+Copyright © 2016
 
 Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.

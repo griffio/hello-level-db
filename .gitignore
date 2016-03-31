@@ -11,7 +11,7 @@ pom.xml
 test_db
 node_modules
 main.js
-hello-world.iml
+*.iml
 figwheel_server.log
 .idea
 npm-debug.log
