@@ -1,4 +1,4 @@
-(ns ^:figwheel-always hello-world.core
+(ns hello-world.core
   (:require-macros [cljs.core.async.macros :refer [go]] [util.macros :refer [<? node->chan]])
   (:require [cljs.nodejs :as nodejs]
             [cljs.core.async :refer [<! >! put! close! chan]]
